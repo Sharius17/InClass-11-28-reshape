@@ -6,3 +6,82 @@ output: html_document
 ---
 
 Let's put this up to github!
+
+```{r}
+library(tidyverse)
+
+```
+
+
+```{r}
+gdp <- read_delim("oecd-gdp.csv.bz2")
+gdp %>% 
+head()
+```
+
+long form gdp of aus and chl (using pivot_longer to make it in long form)
+
+```{r}
+gdpLong <- 
+  gdp %>% 
+  pivot_longer(!c(country, indicator))
+gdpLong %>% 
+  head(10)
+```
+
+change the above "name" and "value" columns to "year" and "gdp"
+notice that the year column are characters, which could be a potential problem
+```{r}
+gdpLong <- 
+  gdp %>% 
+  pivot_longer(!c(country, indicator),
+               names_to = "year",
+               values_to = "gpd")
+gdpLong %>% 
+  head(10)
+```
+
+to change the year column to numerical values, use as.numeric
+```{r}
+gdpLong <- 
+  gdp %>% 
+  pivot_longer(!c(country, indicator),
+               names_to = "year",
+               values_to = "gpd") %>% 
+  mutate(year = as.numeric(year))
+gdpLong %>% 
+  head(10)
+
+```
+
+
+
+make a data frame of a wide form topic
+```{r}
+p <- data.frame(pregnant = c("Yes", "No"),
+            	male = c(NA, 25),
+            	female = c(11, 18))
+p
+
+```
+
+now transform it to long form 
+```{r}
+pl <- p %>%
+  pivot_longer(c(male, female),
+           	names_to = "sex",
+           	values_to = "count")
+pl
+
+
+```
+
+
+now back into wide form bc it's better for certain tasks (but not for things like ggplot); this converts the long form to wide form
+```{r}
+pl %>% 
+  pivot_wider(id_cols = pregnant,
+              names_from = sex, 
+              values_from = count)
+```
+
